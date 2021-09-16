@@ -23,26 +23,26 @@ label values nonoecd_elim elimination
 * Generate stats used directly in text *
 ****************************************
 
-log using microstats.smcl, replace
+*log using microstats.smcl, replace
 
-tab ladder if year==2019 [aw=weightC]
-tab ladder if year==2020 [aw=weightC]
+tab ladder if year==2019 [iw=weightC]
+tab ladder if year==2020 [iw=weightC]
 
-bys female: sum ladder if year==2020 [aw=weightC]
+bys female: sum ladder if year==2020 [iw=weightC]
 
 gen hiladder = inrange(ladder, 8, 10)
 gen loladder = inrange(ladder, 0, 3)
 
-bys female: sum hiladder loladder if year==2020 [aw=weightC]
+bys female: sum hiladder loladder if year==2020 [iw=weightC]
 
-bys year: sum ladder if WHOWPR [aw=weightC]
-bys year: sum ladder if !WHOWPR [aw=weightC]
+bys year: sum ladder if WHOWPR [iw=weightC]
+bys year: sum ladder if !WHOWPR [iw=weightC]
 
-bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger [aw=weightC]
-bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if WHOWPR [aw=weightC]
-bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if !WHOWPR [aw=weightC]
+bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger [iw=weightC]
+bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if WHOWPR [iw=weightC]
+bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if !WHOWPR [iw=weightC]
 
-log close
+*log close
 
 
 *****************************
