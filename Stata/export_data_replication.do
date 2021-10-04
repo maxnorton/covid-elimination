@@ -27,12 +27,15 @@ label variable lrange2 "Medium ladder score (4-7)"
 gen lrange3 = inrange(ladder, 8, 10)
 label variable lrange3 "High ladder score (8-10)"
 
+foreach v in lrange1 lrange2 lrange3 healthproblem confnatgov physicalpain worry stress sadness ///
+		anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+			gen `v'_wt = 1 if !mi(`v')
+}
+
 preserve
-	gen weightnew=1
-	gcollapse (sum) l0-l10 lrange1-lrange3 weightnew ///
-		(mean) healthproblem confnatgov physicalpain worry stress sadness ///
+	gcollapse (sum) *_wt l0-l10 lrange1-lrange3 ///
+		(sum) healthproblem confnatgov physicalpain worry stress sadness ///
 		anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger ///
-		deathrate1231 ///
 		[iw=weightC], by(female wp5 region1 year OECD elim WHOWPR)
 	forval l=0/10 {
 		label variable l`l' "Cum weight at ladder score `l'"

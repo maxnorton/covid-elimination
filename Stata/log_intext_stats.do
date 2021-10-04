@@ -3,6 +3,7 @@
 ****************************************
 
 log using Results/intext_stats.log, replace
+log off
 
 use DataProcessed/ladder_distribution.dta, clear
 
@@ -13,8 +14,10 @@ preserve
 	label values ladder .
 	label variable l "Cum weight"
 
+	log on
 	tab ladder if year==2019 [iw=l]
 	tab ladder if year==2020 [iw=l]
+	log off
 restore
 
 preserve
@@ -24,16 +27,19 @@ preserve
 	label values ladder .
 	label variable l "Cum weight"
 
+	log on
 	bys female: sum ladder if year==2020 [iw=l]
+	log off
 restore
 
 preserve
-	gcollapse (sum) lrange1-lrange3 weightnew, by(female year)
+	gcollapse (sum) lrange*, by(female year)
 	forval i=1/3 {
-		replace lrange`i' = lrange`i' / weightnew
+		replace lrange`i' = lrange`i' / lrange`i'_wt
 	}
+	log on
 	bys female: sum lrange1-lrange3 if year==2020
-	reshape long lrange, i(female year) j(range)
+	log off
 restore
 
 preserve
@@ -43,8 +49,33 @@ preserve
 	label values ladder .
 	label variable l "Cum weight"
 
+	log on
 	bys year: sum ladder if WHOWPR [iw=l]
 	bys year: sum ladder if !WHOWPR [iw=l]
+	log off
+restore
+
+preserve
+	gcollapse (sum)	*_wt healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger, by(year)
+	foreach v in healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+		replace `v' = `v' / `v'_wt
+	}
+
+	log on
+	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger
+	log off
+restore
+
+preserve
+	gcollapse (sum)	*_wt healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger, by(year WHOWPR)
+	foreach v in healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+		replace `v' = `v' / `v'_wt
+	}
+
+	log on
+	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if WHOWPR
+	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if !WHOWPR
+	log off
 restore
 
 log close
