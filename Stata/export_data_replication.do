@@ -1,4 +1,4 @@
-use ../WHR2021/SelectedFiles/gwp_micro_workingsample.dta, clear
+use ../WHR2021/SelectedFiles/gwp_micro_workingsample_2020final.dta, clear
 keep if inlist(year, 2019, 2020) & in2019 & in2020
 
 label define elimination 0 "Mitigation countries" 1 "Elimination countries"
@@ -45,3 +45,9 @@ preserve
 	}
 	save DataProcessed/ladder_distribution.dta, replace
 restore
+
+gen is2020 = year==2020
+
+gcollapse (mean) unemployed deathrate1231 confnatgov healthproblem physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger is2020 oecd_elim nonoecd_elim [aw=weightC], by(wp5 region1 year OECD elim WHOWPR)
+
+save DataProcessed/country_averages.dta, replace
