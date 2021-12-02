@@ -1,21 +1,13 @@
 use ../WHR2021/SelectedFiles/gwp_micro_workingsample_2020final.dta, clear
 keep if inlist(year, 2019, 2020) & in2019 & in2020
 
+rename countOnFriends countOnFrs
+rename healthproblem healthprob
+
 label define elimination 0 "Mitigation countries" 1 "Elimination countries"
 
-gen elim = (WHOWPR | inlist(country, "Iceland", "Rwanda", "Bhutan"))
-label values elim elimination 
-
-gen oecd_elim = .
-replace oecd_elim = 0 if OECD
-replace oecd_elim = 1 if OECD & (WHOWPR | country=="Iceland")
-
-gen nonoecd_elim = .
-replace nonoecd_elim = 0 if !OECD
-replace nonoecd_elim = 1 if !OECD &  (WHOWPR | inlist(country, "Bhutan", "Rwanda"))
-
-label values oecd_elim elimination
-label values nonoecd_elim elimination
+gen Elim = (WHOWPR | inlist(country, "Iceland"))
+label values Elim Elimination 
 
 forval l=0/10 {
 	gen l`l' = ladder==`l'
@@ -27,15 +19,16 @@ label variable lrange2 "Medium ladder score (4-7)"
 gen lrange3 = inrange(ladder, 8, 10)
 label variable lrange3 "High ladder score (8-10)"
 
-foreach v in lrange1 lrange2 lrange3 healthproblem confnatgov physicalpain worry stress sadness ///
-		anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+foreach v in lrange1 lrange2 lrange3 healthprob confnatgov physicalpain worry stress sadness ///
+		anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger {
 			gen `v'_wt = 1 if !mi(`v')
 }
 
 preserve
+	rename Elim elim
 	gcollapse (sum) *_wt l0-l10 lrange1-lrange3 ///
-		(sum) healthproblem confnatgov physicalpain worry stress sadness ///
-		anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger ///
+		(sum) healthprob confnatgov physicalpain worry stress sadness ///
+		anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger ///
 		[iw=weightC], by(female wp5 region1 year OECD elim WHOWPR)
 	forval l=0/10 {
 		label variable l`l' "Cum weight at ladder score `l'"
@@ -48,7 +41,39 @@ restore
 
 gen is2020 = year==2020
 
-gcollapse (sum) *_wt unemployed deathrate1231 confnatgov healthproblem physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger is2020 oecd_elim nonoecd_elim [iw=weightC], by(wp5 region1 year OECD elim WHOWPR)
+gen OecdElim = .
+replace OecdElim = 0 if OECD
+replace OecdElim = 1 if OECD & Elim
+
+gen NonoecdElim = .
+replace NonoecdElim = 0 if !OECD
+replace NonoecdElim = 1 if !OECD & Elim
+
+gen Mitig = !Elim
+
+gen OecdMitig = .
+replace OecdMitig = 0 if OECD 
+replace OecdMitig = 1 if OECD & Mitig 
+
+gen NonoecdMitig = . 
+replace NonoecdMitig = 0 if !OECD
+replace NonoecdMitig = !OECD & Mitig
+
+foreach sample in Elim Mitig OecdElim OecdMitig NonoecdElim NonoecdMitig {
+	foreach v in worry stress sadness anger laugh enjoyment healthprob physicalpain countOnFrs freedom donation volunteering helpstranger confnatgov {
+		reghdfe `v' is2020 if `sample'==1 [aw=weightC], noabsorb vce(r)
+		gen seDelta_`v'`sample' = _se[is2020] if `sample'==1 
+	}
+}
+
+foreach sample in Elim Mitig OecdElim OecdMitig NonoecdElim NonoecdMitig {
+	reghdfe deathrate1231 if `sample'==1 [aw=weightC], noabsorb vce(r)
+	gen seDeathrate`sample' = _se[_cons] if `sample'==1
+}
+
+rename Elim elim
+
+gcollapse (mean) *_wt unemployed deathrate1231 confnatgov healthprob physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger is2020 (firstnm) se* [iw=weightC], by(wp5 region1 year OECD elim WHOWPR)
 
 save DataProcessed/country_averages.dta, replace
 
