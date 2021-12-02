@@ -48,6 +48,9 @@ restore
 
 gen is2020 = year==2020
 
-gcollapse (mean) unemployed deathrate1231 confnatgov healthproblem physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger is2020 oecd_elim nonoecd_elim [aw=weightC], by(wp5 region1 year OECD elim WHOWPR)
+gcollapse (sum) *_wt unemployed deathrate1231 confnatgov healthproblem physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger is2020 oecd_elim nonoecd_elim [iw=weightC], by(wp5 region1 year OECD elim WHOWPR)
 
 save DataProcessed/country_averages.dta, replace
+
+use "../WHR2021/Cross-sectional data/nationalavg_mortalitymeasures_20211025.dta", clear
+save DataProcessed/country_mortality.dta, replace

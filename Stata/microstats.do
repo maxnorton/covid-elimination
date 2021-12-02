@@ -1,4 +1,4 @@
-use ../WHR2021/SelectedFiles/gwp_micro_workingsample.dta, clear
+use ../WHR2021/SelectedFiles/gwp_micro_workingsample_2020final.dta, clear
 keep if inlist(year, 2019, 2020) & in2019 & in2020
 
 set scheme plottig
@@ -35,8 +35,8 @@ gen loladder = inrange(ladder, 0, 3)
 
 bys female: sum hiladder loladder if year==2020 [iw=weightC]
 
-bys year: sum ladder if WHOWPR [iw=weightC]
-bys year: sum ladder if !WHOWPR [iw=weightC]
+bys year: sum ladder if WHOWPR [aw=weightC]
+bys year: sum ladder if !WHOWPR [aw=weightC]
 
 bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger [iw=weightC]
 bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if WHOWPR [iw=weightC]
@@ -54,12 +54,16 @@ preserve
 	collapse (mean) deathrate1231 elim, by(wp5)
 	reghdfe deathrate1231 if elim, noabsorb vce(r)
 	gen delta19 = _b[_cons] if elim
+	gen se19 = _se[_cons] if elim
 	gen ciup19 = delta19 + 1.96*_se[_cons] if elim 
 	gen cidown19 = delta19 - 1.96*_se[_cons] if elim
 	reghdfe deathrate1231 if !elim, noabsorb vce(r)
 	replace delta19 = _b[_cons] if !elim
+	replace se19 = _se[_cons] if !elim
 	replace ciup19 = delta19 + 1.96*_se[_cons] if !elim 
 	replace cidown19 = delta19 - 1.96*_se[_cons] if !elim
+	bys elim: sum delta19 se19
+	pause
 	drop deathrate1231
 	tempfile drest
 	save `drest', replace
@@ -85,10 +89,12 @@ preserve
 	foreach v in worry stress sadness anger laugh enjoyment healthproblem physicalpain countOnFriends freedom donation volunteering helpstranger confnatgov {
 		if inlist("`v'", "laugh", "healthproblem", "countOnFriends") scalar num = num + 1
 		reghdfe `v' is2020 if elim [aw=weightC], noabsorb vce(r)
+		pause
 		gen delta`=num' = _b[is2020] if elim
 		gen ciup`=num' = delta`=num' + 1.96*_se[is2020] if elim 
 		gen cidown`=num' = delta`=num' - 1.96*_se[is2020] if elim
 		reghdfe `v' is2020 if !elim, noabsorb vce(r)
+		pause
 		replace delta`=num' = _b[is2020] if !elim
 		replace ciup`=num' = delta`=num' + 1.96*_se[is2020] if !elim 
 		replace cidown`=num' = delta`=num' - 1.96*_se[is2020] if !elim

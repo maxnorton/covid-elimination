@@ -1,8 +1,12 @@
+use DataProcessed/country_averages, clear
+foreach v in worry stress sadness anger laugh enjoyment healthproblem physicalpain countOnFriends freedom donation volunteering helpstranger confnatgov {
+	replace `v' = `v' / `v'_wt
+}
+
+
 *****************************
 * Figure 6 - Global changes *
 *****************************
-
-use DataProcessed/country_averages, clear
 
 label variable confnatgov "Conf nat gov"
 label variable healthproblem "Health problem"
