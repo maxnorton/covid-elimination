@@ -112,4 +112,5 @@ gcollapse (mean) *_wt unemployed deathrate1231 confnatgov healthprob physicalpai
 save DataProcessed/country_averages.dta, replace
 
 use "../WHR2021/Cross-sectional data/nationalavg_mortalitymeasures_20211025.dta", clear
+keep excessdeaths2020_relavg deathrate1231 country region
 save DataProcessed/country_mortality.dta, replace

@@ -1,6 +1,6 @@
 set scheme plottig
 
-use DataProcessed/country_averages, clear
+use DataProcessed/country_mortality, clear
 
 keep if !mi(excessdeaths2020_relavg)
 

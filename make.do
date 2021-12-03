@@ -2,6 +2,7 @@
 *   requires access to Gallup World Poll microdata.            
 * Outputs: 
 * - DataProcessed/ladder_distribution.dta
+* - DataProcessed/country_averages.dta
 * - DataProcessed/country_mortality.dta
 do Stata/export_data_replication.do
 
@@ -21,7 +22,6 @@ do Stata/plot_changes.do
 * - Requires: DataProcessed/ladder_distribution.dta
 * - Outputs: Results/Fig5, as .gph and .png
 do Stata/plot_ladder_dists.do
-
 
 * Output statistics quoted directly in text
 * - Requires: DataProcessed/ladder_distribution.dta

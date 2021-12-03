@@ -56,25 +56,25 @@ preserve
 restore
 
 preserve
-	gcollapse (sum)	*_wt healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger, by(year)
-	foreach v in healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+	gcollapse (sum)	*_wt healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger, by(year)
+	foreach v in healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger {
 		replace `v' = `v' / `v'_wt
 	}
 
 	log on
-	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger
+	bys year: sum healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger
 	log off
 restore
 
 preserve
-	gcollapse (sum)	*_wt healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger, by(year WHOWPR)
-	foreach v in healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger {
+	gcollapse (sum)	*_wt healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger, by(year WHOWPR)
+	foreach v in healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger {
 		replace `v' = `v' / `v'_wt
 	}
 
 	log on
-	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if WHOWPR
-	bys year: sum healthproblem confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFriends freedom donation volunteering helpstranger if !WHOWPR
+	bys year: sum healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger if WHOWPR
+	bys year: sum healthprob confnatgov physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger if !WHOWPR
 	log off
 restore
 
