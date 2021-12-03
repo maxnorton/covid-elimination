@@ -73,6 +73,14 @@ foreach sample in Elim Mitig OecdElim OecdMitig NonoecdElim NonoecdMitig {
 
 rename Elim elim
 
+gen seMean_confnatgov = .
+forval yr = 2019/2020 {
+	reghdfe confnatgov if WHOWPR & year==`yr', noabsorb vce(r)
+	replace seMean_confnatgov = _se[_cons] if WHOWPR & year==`yr'
+	reghdfe confnatgov if !WHOWPR & year==`yr', noabsorb vce(r)
+	replace seMean_confnatgov = _se[_cons] if !WHOWPR & year==`yr'
+}
+
 gcollapse (mean) *_wt unemployed deathrate1231 confnatgov healthprob physicalpain worry stress sadness anger laugh enjoyment countOnFrs freedom donation volunteering helpstranger is2020 (firstnm) se* [iw=weightC], by(wp5 region1 year OECD elim WHOWPR)
 
 save DataProcessed/country_averages.dta, replace

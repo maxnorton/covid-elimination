@@ -1,8 +1,33 @@
 use DataProcessed/country_averages, clear
-foreach v in worry stress sadness anger laugh enjoyment healthprob physicalpain countOnFrs freedom donation volunteering helpstranger confnatgov {
-*	replace `v' = `v' / `v'_wt
-}
 
+************************************************
+* Figure 4 - Change in confidence in natl govt *
+************************************************
+
+preserve
+	replace confnatgov = confnatgov / confnatgov_wt
+	forval yr = 2019/2020 {
+		sum seMean_confnatgov if WHOWPR & year==`yr'
+		assert r(sd)==0
+		sum seMean_confnatgov if !WHOWPR & year==`yr'
+		assert r(sd)==0
+	}
+	collapse (mean) mean = confnatgov se = seMean_confnatgov, by(WHOWPR year)
+	gen ciup = mean + 1.96*se
+	gen cidown = mean - 1.96*se
+	twoway (bar mean year, ///
+			sort xsc(range(2019(1)2020)) ysc(range(0.42(0.1)0.56)) ///
+			xlabel(2019(1)2020, noticks labcolor(black) labsize(medsmall)) ///
+			color(gs7) barw(0.95) ) ///
+		(rcap ciup cidown year, lcolor(black) ysc(range(0.42(0.1)0.56))) ///
+	, by(WHOWPR, note("") legend(off) title("Confidence in government increases more in elimination countries") ///
+	l2("Mean pop share" "reporting" "confidence in" "national" "government", size(medsmall) orientation(horizontal) justification(left)) ) ///
+	subtitle(,pos(6)) plotregion(fcolor(white)) ///
+	xsc(lcolor(black)) ysc(lcolor(black)) ylabel(#15, grid glcolor(gs6) glpattern(dot) labcolor(black) labsize(medsmall)) ///
+	xtitle("")
+	graph save Results/Fig4.gph, replace
+	graph export Results/Fig4.png, replace
+restore 
 
 *****************************
 * Figure 6 - Global changes *
@@ -65,7 +90,7 @@ set scheme plotplainblind
 twoway (scatter delta cat if elim & cat!=19 & dupe==1, mcolor(red) msymbol(X) msize(medium) mlwidth(.4) ///
 		yaxis(1) ysc(range(-.08 .12) axis(1) lcolor(black) lpattern(solid)) ///
 		ylabel(-.08(.04).12, axis(1) grid labcolor(black) labsize(medsmall) tlcolor(black)) ///
-		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizonatal) justification(left)) /// 
+		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizontal) justification(left)) /// 
 		ymlabel(-.08(.01).12, axis(1) nolab notick grid glcolor(gs6) glpattern(dot)) ) ///
 	(rcap ciup cidown cat if elim & cat!=19 & dupe==1, lcolor(red) yaxis(1)) ///
 	(scatter delta cat if !elim & cat!=19 & dupe==1, mcolor(gs5) msymbol(O) msize(vsmall) mlwidth(.4) yaxis(1)) ///
@@ -156,7 +181,7 @@ set scheme plotplainblind
 twoway (scatter delta cat if elim & cat!=19 & dupe==1, mcolor(red) msymbol(X) msize(medium) mlwidth(.4) ///
 		yaxis(1) ysc(range(-.08 .12) axis(1) lcolor(black) lpattern(solid)) ///
 		ylabel(-.08(.04).12, axis(1) grid labcolor(black) labsize(medsmall) tlcolor(black)) ///
-		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizonatal) justification(left)) /// 
+		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizontal) justification(left)) /// 
 		ymlabel(-.08(.01).12, axis(1) nolab notick grid glcolor(gs6) glpattern(dot)) ) ///
 	(rcap ciup cidown cat if elim & cat!=19 & dupe==1, lcolor(red) yaxis(1)) ///
 	(scatter delta cat if !elim & cat!=19 & dupe==1, mcolor(gs5) msymbol(O) msize(vsmall) mlwidth(.4) yaxis(1)) ///
@@ -246,7 +271,7 @@ set scheme plotplainblind
 twoway (scatter delta cat if elim & cat!=19 & dupe==1, mcolor(red) msymbol(X) msize(medium) mlwidth(.4) ///
 		yaxis(1) ysc(range(-.08 .12) axis(1) lcolor(black) lpattern(solid)) ///
 		ylabel(-.08(.04).12, axis(1) grid labcolor(black) labsize(medsmall) tlcolor(black)) ///
-		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizonatal) justification(left)) /// 
+		ytitle("Average" "change" "from" "2019 to" "2020", size(medsmall) axis(1) orientation(horizontal) justification(left)) /// 
 		ymlabel(-.08(.01).12, axis(1) nolab notick grid glcolor(gs6) glpattern(dot)) ) ///
 	(rcap ciup cidown cat if elim & cat!=19 & dupe==1, lcolor(red) yaxis(1)) ///
 	(scatter delta cat if !elim & cat!=19 & dupe==1, mcolor(gs5) msymbol(O) msize(vsmall) mlwidth(.4) yaxis(1)) ///

@@ -5,9 +5,16 @@
 * - DataProcessed/country_mortality.dta
 do Stata/export_data_replication.do
 
-* Generate Tables 6-8: Changes in key subjective variables
+* Generate Figures 1-3: 
 * - Requires: DataProcessed/country_mortality.dta
-* - Outputs: Results/Fig6-Fig8 as .gph and .png
+* - Outputs: 
+*    + Results/Fig1-Fig3 as .gph and .png
+*    + Results/Figs1-3_data.xls reporting underlying counts
+do Stata/plot_deaths.do
+
+* Generate Figures 4 & 6-8: Changes in key subjective variables
+* - Requires: DataProcessed/country_averages.dta
+* - Outputs: Results/Fig4, Fig6-Fig8 as .gph and .png
 do Stata/plot_changes.do
 
 * Output statistics quoted directly in text
