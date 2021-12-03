@@ -17,6 +17,12 @@ do Stata/plot_deaths.do
 * - Outputs: Results/Fig4, Fig6-Fig8 as .gph and .png
 do Stata/plot_changes.do
 
+* Generate Figure 5: Distribution of ladder scores, 2019 vs. 2020
+* - Requires: DataProcessed/ladder_distribution.dta
+* - Outputs: Results/Fig5, as .gph and .png
+do Stata/plot_ladder_dists.do
+
+
 * Output statistics quoted directly in text
 * - Requires: DataProcessed/ladder_distribution.dta
 * - Output: Results/intext_stats.log
